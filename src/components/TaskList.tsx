@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import '../styles/tasklist.scss'
+import '../styles/tasklist.scss';
 
-import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { FiTrash, FiCheckSquare } from 'react-icons/fi';
 
 interface Task {
   id: number;
@@ -13,17 +13,38 @@ interface Task {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newId, setNewId] = useState(0);
+ 
+  useEffect(() => {
+    setNewId(newId + 1);
+  }, [tasks]);
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (newTaskTitle == '') {
+      return null;
+    } else {
+      setTasks(() => [
+        ...tasks,{
+          id: newId,
+          title: newTaskTitle,
+          isComplete: false
+        }
+      ])
+    }
   }
 
-  function handleToggleTaskCompletion(id: number) {
+  function handleToggleTaskCompletion(task: Task) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    task.isComplete = true;
+    console.log(task.isComplete)
+    const dados = [...tasks]
+    setTasks(dados)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    setTasks(tasks.filter((index)=>{ index.id !== id}))
   }
 
   return (
@@ -54,7 +75,7 @@ export function TaskList() {
                     type="checkbox"
                     readOnly
                     checked={task.isComplete}
-                    onClick={() => handleToggleTaskCompletion(task.id)}
+                    onClick={() => handleToggleTaskCompletion(task)}
                   />
                   <span className="checkmark"></span>
                 </label>
